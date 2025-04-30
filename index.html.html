@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多功能转换器</title>
+  <!-- Modern Roboto Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Reset */
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f6f9, #e0ebf7);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    /* Main content wrapper */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      padding: 40px;
+      margin: 15px;
+      flex: 1 1 300px;
+      max-width: 400px;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+    .container:hover { transform: translateY(-5px); }
+    h1 {
+      font-size: 1.8em;
+      color: #0077b6;
+      margin-bottom: 20px;
+    }
+    .instructions {
+      color: #555;
+      font-size: 0.95em;
+      margin-bottom: 15px;
+    }
+    .input-box {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: 2px solid #0077b6;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+      outline: none;
+      background: #fff;
+    }
+    .input-box:focus { border-color: #00b4d8; }
+    /* Input group for inline elements */
+    .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .input-group .input-box { flex: 4; margin-bottom: 0; }
+    .unit-label {
+      font-size: 1.1em;
+      color: #555;
+      white-space: nowrap;
+    }
+    .result {
+      font-size: 1.4em;
+      font-weight: 500;
+      color: #333;
+      background-color: #e0f7fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+    }
+    .global-footer {
+      text-align: center;
+      font-size: 0.8em;
+      color: #aaa;
+      margin: 20px 0 10px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+    /* Styling for select groups */
+    .select-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .select-box {
+      flex: 1;
+      padding: 15px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: 2px solid #0077b6;
+      background: #fff;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    /* Add a small-select class for compact selects */
+    .small-select {
+      width: auto;
+      min-width: 80px;
+    }
+    /* Modern switch button */
+    .switch-button {
+      background: #0077b6;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .switch-button:active { transform: scale(0.9); }
+  </style>
+</head>
+<body>
+
+  <!-- Main content wrapper -->
+  <div class="main-content">
+
+    <!-- 时区转换器 -->
+    <div class="container" id="timeConverter">
+      <h1>时区转换器</h1>
+      <p class="instructions">请选择源时区和目标时区，然后输入时间 (格式: YYYY-MM-DD HH:MM:SS)</p>
+      <div class="select-group">
+        <select id="timeFrom" class="select-box">
+          <option value="北京">北京</option>
+          <option value="美东">美东</option>
+        </select>
+        <button id="timeSwitchButton" class="switch-button">⇄</button>
+        <select id="timeTo" class="select-box">
+          <option value="美东">美东</option>
+          <option value="北京">北京</option>
+        </select>
+      </div>
+      <input id="timeInput" class="input-box" type="text" placeholder="YYYY-MM-DD HH:MM:SS">
+      <div id="convertedTime" class="result">
+        <p id="convertedTimeText"></p>
+      </div>
+    </div>
+
+    <!-- 长度转换器 -->
+    <div class="container" id="lengthConverter">
+      <h1>长度转换</h1>
+      <p class="instructions">请选择源和目标单位，然后输入数值</p>
+      <div class="select-group">
+        <select id="lengthFrom" class="select-box">
+          <option value="in">in</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="yard">yard</option>
+        </select>
+        <button id="lengthSwitchButton" class="switch-button">⇄</button>
+        <select id="lengthTo" class="select-box">
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+          <option value="m">m</option>
+          <option value="yard">yard</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <input id="lengthInput" class="input-box" type="text" placeholder="重量">
+        <!-- Compact select for dimension unit -->
+        <select id="cbmDimUnit" class="select-box small-select">
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+        </select>
+      </div>
+      <div id="convertedLength" class="result">
+        <p id="lengthValue"></p>
+      </div>
+    </div>
+
+    <!-- 重量转换器 -->
+    <div class="container" id="weightConverter">
+      <h1>重量单位转换</h1>
+      <p class="instructions">请选择源和目标单位，然后输入数值</p>
+      <div class="select-group">
+        <select id="weightFrom" class="select-box">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+          <option value="斤">斤</option>
+        </select>
+        <button id="switchButton" class="switch-button">⇄</button>
+        <select id="weightTo" class="select-box">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+          <option value="斤">斤</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <input id="weightInput" class="input-box" type="text" placeholder="重量">
+        <!-- Compact select for weight unit -->
+        <select id="cbmWeightUnit" class="select-box small-select">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </div>
+      <div id="convertedWeight" class="result">
+        <p id="weightValue"></p>
+      </div>
+    </div>
+
+    <!-- CBM Calculator -->
+    <div class="container" id="cbmCalculator">
+      <h1>CBM Calculator</h1>
+      <p class="instructions">输入长、宽、高和重量</p>
+      <div class="input-group">
+        <input id="lengthInput_cbm" class="input-box" type="text" placeholder="长">
+        <input id="widthInput_cbm" class="input-box" type="text" placeholder="宽">
+        <input id="heightInput_cbm" class="input-box" type="text" placeholder="高">
+        <!-- Use same compact select for dimension unit -->
+        <select id="cbmDimUnit_cbm" class="select-box small-select">
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <input id="weightInput_cbm" class="input-box" type="text" placeholder="重量">
+        <!-- Use a compact select for weight unit (kg/lbs) -->
+        <select id="cbmWeightUnit_cbm" class="select-box small-select">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </div>
+      <div id="cbmResult" class="result">
+        <p id="cbmValue"></p>
+        <p id="densityValue"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Global Footer -->
+  <div class="global-footer">
+    <p>制作人：郑子豪</p>
+  </div>
+
+  <script>
+    /***** 时区转换器 *****/
+    function performTimeConversion() {
+      const inputStr = document.getElementById('timeInput').value;
+      if (!inputStr) {
+        document.getElementById('convertedTime').style.display = 'none';
+        return;
+      }
+      let inputTime = new Date(inputStr);
+      if (isNaN(inputTime.getTime())) {
+        document.getElementById('convertedTime').style.display = 'none';
+        return;
+      }
+      const timeFrom = document.getElementById('timeFrom').value;
+      const timeTo = document.getElementById('timeTo').value;
+      const currentDate = new Date();
+      // Determine DST condition for Eastern time (approximate)
+      const isDST = currentDate.getMonth() >= 3 && currentDate.getMonth() <= 10;
+      const diffHours = isDST ? 12 : 13;
+      let resultTime;
+      if(timeFrom === timeTo) {
+        resultTime = inputTime;
+      } else if(timeFrom === "北京" && timeTo === "美东") {
+        resultTime = new Date(inputTime.getTime() - diffHours * 60 * 60 * 1000);
+      } else if(timeFrom === "美东" && timeTo === "北京") {
+        resultTime = new Date(inputTime.getTime() + diffHours * 60 * 60 * 1000);
+      }
+      const yearFormatted = resultTime.getFullYear();
+      const monthFormatted = ('0' + (resultTime.getMonth() + 1)).slice(-2);
+      const dayFormatted = ('0' + resultTime.getDate()).slice(-2);
+      let hoursFormatted = resultTime.getHours();
+      const minutesFormatted = ('0' + resultTime.getMinutes()).slice(-2);
+      const secondsFormatted = ('0' + resultTime.getSeconds()).slice(-2);
+      const formattedTime = `${yearFormatted}-${monthFormatted}-${dayFormatted} ${hoursFormatted}:${minutesFormatted}:${secondsFormatted}`;
+      document.getElementById('convertedTimeText').textContent = formattedTime;
+      document.getElementById('convertedTime').style.display = 'block';
+    }
+
+    document.getElementById('timeInput').addEventListener('input', performTimeConversion);
+    document.getElementById('timeFrom').addEventListener('change', performTimeConversion);
+    document.getElementById('timeTo').addEventListener('change', performTimeConversion);
+    document.getElementById('timeSwitchButton').addEventListener('click', function() {
+      const timeFromEl = document.getElementById('timeFrom');
+      const timeToEl = document.getElementById('timeTo');
+      const temp = timeFromEl.value;
+      timeFromEl.value = timeToEl.value;
+      timeToEl.value = temp;
+      performTimeConversion();
+    });
+
+    /***** 长度转换器 *****/
+    const lengthFactors = { "cm": 0.01, "in": 0.0254, "m": 1, "yard": 0.9144 };
+
+    function performLengthConversion() {
+      const inputVal = parseFloat(document.getElementById('lengthInput').value);
+      if (isNaN(inputVal)) {
+        document.getElementById('convertedLength').style.display = 'none';
+        return;
+      }
+      const fromUnit = document.getElementById('lengthFrom').value;
+      const toUnit = document.getElementById('lengthTo').value;
+      const valueInMeters = inputVal * lengthFactors[fromUnit];
+      const convertedValue = valueInMeters / lengthFactors[toUnit];
+      document.getElementById('lengthValue').textContent = `${convertedValue.toFixed(2)} ${toUnit}`;
+      document.getElementById('convertedLength').style.display = 'block';
+    }
+
+    const lengthFromEl = document.getElementById('lengthFrom');
+    const lengthToEl = document.getElementById('lengthTo');
+    if (localStorage.getItem('lengthFrom')) { lengthFromEl.value = localStorage.getItem('lengthFrom'); }
+    else { lengthFromEl.value = 'in'; }
+    if (localStorage.getItem('lengthTo')) { lengthToEl.value = localStorage.getItem('lengthTo'); }
+    else { lengthToEl.value = 'cm'; }
+    let prevLengthFrom = lengthFromEl.value;
+    let prevLengthTo = lengthToEl.value;
+    lengthFromEl.addEventListener('change', function() {
+      if (this.value !== prevLengthFrom) {
+        document.getElementById('lengthInput').value = "";
+        document.getElementById('convertedLength').style.display = 'none';
+      }
+      prevLengthFrom = this.value;
+      localStorage.setItem('lengthFrom', this.value);
+      performLengthConversion();
+    });
+    lengthToEl.addEventListener('change', function() {
+      if (this.value !== prevLengthTo) {
+        document.getElementById('lengthInput').value = "";
+        document.getElementById('convertedLength').style.display = 'none';
+      }
+      prevLengthTo = this.value;
+      localStorage.setItem('lengthTo', this.value);
+      performLengthConversion();
+    });
+    document.getElementById('lengthInput').addEventListener('input', performLengthConversion);
+    document.getElementById('lengthSwitchButton').addEventListener('click', function() {
+      const lengthInputEl = document.getElementById('lengthInput');
+      let currentValue = parseFloat(lengthInputEl.value);
+      if (!isNaN(currentValue)) {
+        const fromUnit = lengthFromEl.value;
+        const toUnit = lengthToEl.value;
+        const valueInMeters = currentValue * lengthFactors[fromUnit];
+        const convertedValue = valueInMeters / lengthFactors[toUnit];
+        const temp = lengthFromEl.value;
+        lengthFromEl.value = lengthToEl.value;
+        lengthToEl.value = temp;
+        localStorage.setItem('lengthFrom', lengthFromEl.value);
+        localStorage.setItem('lengthTo', lengthToEl.value);
+        prevLengthFrom = lengthFromEl.value;
+        prevLengthTo = lengthToEl.value;
+        lengthInputEl.value = convertedValue.toFixed(2);
+        performLengthConversion();
+      } else {
+        const temp = lengthFromEl.value;
+        lengthFromEl.value = lengthToEl.value;
+        lengthToEl.value = temp;
+        localStorage.setItem('lengthFrom', lengthFromEl.value);
+        localStorage.setItem('lengthTo', lengthToEl.value);
+        prevLengthFrom = lengthFromEl.value;
+        prevLengthTo = lengthToEl.value;
+        lengthInputEl.value = "";
+        document.getElementById('convertedLength').style.display = 'none';
+      }
+    });
+
+    /***** 重量转换器 *****/
+    const weightFactors = { "lbs": 0.45359237, "kg": 1, "斤": 0.5 };
+
+    function performWeightConversion() {
+      const inputVal = parseFloat(document.getElementById('weightInput').value);
+      if (isNaN(inputVal)) {
+        document.getElementById('convertedWeight').style.display = 'none';
+        return;
+      }
+      const fromUnit = document.getElementById('weightFrom').value;
+      const toUnit = document.getElementById('weightTo').value;
+      const valueInKg = inputVal * weightFactors[fromUnit];
+      const convertedValue = valueInKg / weightFactors[toUnit];
+      document.getElementById('weightValue').textContent = `${convertedValue.toFixed(2)} ${toUnit}`;
+      document.getElementById('convertedWeight').style.display = 'block';
+    }
+
+    const weightFromEl = document.getElementById('weightFrom');
+    const weightToEl = document.getElementById('weightTo');
+    if (localStorage.getItem('weightFrom')) { weightFromEl.value = localStorage.getItem('weightFrom'); }
+    else { weightFromEl.value = 'lbs'; }
+    if (localStorage.getItem('weightTo')) { weightToEl.value = localStorage.getItem('weightTo'); }
+    else { weightToEl.value = 'kg'; }
+    let prevWeightFrom = weightFromEl.value;
+    let prevWeightTo = weightToEl.value;
+    weightFromEl.addEventListener('change', function() {
+      if (this.value !== prevWeightFrom) {
+        document.getElementById('weightInput').value = "";
+        document.getElementById('convertedWeight').style.display = 'none';
+      }
+      prevWeightFrom = this.value;
+      localStorage.setItem('weightFrom', this.value);
+      performWeightConversion();
+    });
+    weightToEl.addEventListener('change', function() {
+      if (this.value !== prevWeightTo) {
+        document.getElementById('weightInput').value = "";
+        document.getElementById('convertedWeight').style.display = 'none';
+      }
+      prevWeightTo = this.value;
+      localStorage.setItem('weightTo', this.value);
+      performWeightConversion();
+    });
+    document.getElementById('weightInput').addEventListener('input', performWeightConversion);
+    document.getElementById('switchButton').addEventListener('click', function() {
+      const weightInputEl = document.getElementById('weightInput');
+      let currentValue = parseFloat(weightInputEl.value);
+      if (!isNaN(currentValue)) {
+        const fromUnit = weightFromEl.value;
+        const toUnit = weightToEl.value;
+        const valueInKg = currentValue * weightFactors[fromUnit];
+        const convertedValue = valueInKg / weightFactors[toUnit];
+        const temp = weightFromEl.value;
+        weightFromEl.value = weightToEl.value;
+        weightToEl.value = temp;
+        localStorage.setItem('weightFrom', weightFromEl.value);
+        localStorage.setItem('weightTo', weightToEl.value);
+        prevWeightFrom = weightFromEl.value;
+        prevWeightTo = weightToEl.value;
+        weightInputEl.value = convertedValue.toFixed(2);
+        performWeightConversion();
+      } else {
+        const temp = weightFromEl.value;
+        weightFromEl.value = weightToEl.value;
+        weightToEl.value = temp;
+        localStorage.setItem('weightFrom', weightFromEl.value);
+        localStorage.setItem('weightTo', weightToEl.value);
+        prevWeightFrom = weightFromEl.value;
+        prevWeightTo = weightToEl.value;
+        weightInputEl.value = "";
+        document.getElementById('convertedWeight').style.display = 'none';
+      }
+    });
+
+    /***** CBM Calculator *****/
+    function performCBMCalculation() {
+      const dimUnit = document.getElementById('cbmDimUnit_cbm').value;
+      const weightUnit = document.getElementById('cbmWeightUnit_cbm').value;
+      const lengthVal = parseFloat(document.getElementById('lengthInput_cbm').value);
+      const widthVal = parseFloat(document.getElementById('widthInput_cbm').value);
+      const heightVal = parseFloat(document.getElementById('heightInput_cbm').value);
+      
+      let volume = 0;
+      if (dimUnit === 'cm') {
+        volume = (lengthVal * widthVal * heightVal) / 1000000;
+      } else { // "in"
+        volume = (lengthVal * widthVal * heightVal) * 0.000016387064;
+      }
+      const weightVal = parseFloat(document.getElementById('weightInput_cbm').value);
+      let weightKg = null;
+      if (isNaN(lengthVal) || isNaN(widthVal) || isNaN(heightVal) || !isNaN(weightVal) === false) {
+        document.getElementById('cbmResult').style.display = 'none';
+        return;
+      }
+      if (!isNaN(weightVal)) {
+        weightKg = weightUnit === 'lbs' ? weightVal * 0.45359237 : weightVal;
+      }
+      let resultText = `体积: ${volume.toFixed(4)} 立方米`;
+      let densityText = "";
+      if (weightKg !== null && volume > 0) {
+        const density = weightKg / volume;
+        densityText = `密度: ${density.toFixed(2)} kg/m³`;
+      }
+      document.getElementById('cbmValue').textContent = resultText;
+      document.getElementById('densityValue').textContent = densityText;
+      document.getElementById('cbmResult').style.display = 'block';
+    }
+
+    const cbmDimEl = document.getElementById('cbmDimUnit_cbm');
+    const cbmWeightEl = document.getElementById('cbmWeightUnit_cbm');
+    if (localStorage.getItem('cbmDimUnit')) { cbmDimEl.value = localStorage.getItem('cbmDimUnit'); }
+    else { cbmDimEl.value = 'cm'; }
+    if (localStorage.getItem('cbmWeightUnit')) { cbmWeightEl.value = localStorage.getItem('cbmWeightUnit'); }
+    else { cbmWeightEl.value = 'kg'; }
+    let prevCbmDim = cbmDimEl.value;
+    let prevCbmWeight = cbmWeightEl.value;
+    cbmDimEl.addEventListener('change', function() {
+      if (this.value !== prevCbmDim) {
+        document.getElementById('lengthInput_cbm').value = "";
+        document.getElementById('widthInput_cbm').value = "";
+        document.getElementById('heightInput_cbm').value = "";
+        document.getElementById('cbmResult').style.display = 'none';
+      }
+      prevCbmDim = this.value;
+      localStorage.setItem('cbmDimUnit', this.value);
+      performCBMCalculation();
+    });
+    cbmWeightEl.addEventListener('change', function() {
+      if (this.value !== prevCbmWeight) {
+        document.getElementById('weightInput_cbm').value = "";
+        document.getElementById('cbmResult').style.display = 'none';
+      }
+      prevCbmWeight = this.value;
+      localStorage.setItem('cbmWeightUnit', this.value);
+      performCBMCalculation();
+    });
+    document.getElementById('lengthInput_cbm').addEventListener('input', performCBMCalculation);
+    document.getElementById('widthInput_cbm').addEventListener('input', performCBMCalculation);
+    document.getElementById('heightInput_cbm').addEventListener('input', performCBMCalculation);
+    document.getElementById('weightInput_cbm').addEventListener('input', performCBMCalculation);
+    
+  </script>
+
+</body>
+</html>
